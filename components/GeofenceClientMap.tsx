@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as leaflet from "leaflet";
 import { MapContainer, TileLayer, Polygon, Popup, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -27,6 +27,7 @@ const GeofenceClientMap: React.FC = () => {
     null
   );
   const [locating, setLocating] = useState(false);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     // Fetch geofence areas from backend
@@ -54,6 +55,13 @@ const GeofenceClientMap: React.FC = () => {
         (pos) => {
           setUserLocation([pos.coords.latitude, pos.coords.longitude]);
           setLocating(false);
+          // Zoom to user location
+          if (mapRef.current) {
+            mapRef.current.setView(
+              [pos.coords.latitude, pos.coords.longitude],
+              18
+            );
+          }
         },
         () => {
           setUserLocation(null);
@@ -119,6 +127,7 @@ const GeofenceClientMap: React.FC = () => {
             }}
           >
             <MapContainer
+              ref={mapRef}
               center={(userLocation || center) as [number, number]}
               zoom={16}
               style={{ height: "100%", width: "100%" }}
