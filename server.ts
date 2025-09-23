@@ -1,3 +1,9 @@
+/*
+  This file is now deprecated.
+  All backend API logic has been migrated to Next.js API routes in /pages/api/geofence.ts.
+  You can safely delete this file.
+*/
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");

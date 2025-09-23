@@ -27,7 +27,7 @@ const GeofenceClientMap: React.FC = () => {
 
   useEffect(() => {
     // Fetch geofence areas from backend
-    fetch("http://localhost:5000/api/geofence")
+    fetch("/api/geofence")
       .then((res) => res.json())
       .then((data) => setAreas(data));
 
