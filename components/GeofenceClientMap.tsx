@@ -45,6 +45,35 @@ const GeofenceClientMap: React.FC = () => {
     }
   }, []);
 
+  // Helper function to check if user is inside any geofence area
+  function isUserInGeofence(
+    userLoc: [number, number] | null,
+    areas: GeofenceArea[]
+  ): boolean {
+    if (!userLoc) return false;
+    // Simple point-in-polygon check for each area
+    function pointInPolygon(
+      point: [number, number],
+      vs: { lat: number; lng: number }[]
+    ) {
+      let x = point[0],
+        y = point[1];
+      let inside = false;
+      for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        let xi = vs[i].lat,
+          yi = vs[i].lng;
+        let xj = vs[j].lat,
+          yj = vs[j].lng;
+        let intersect =
+          yi > y !== yj > y &&
+          x < ((xj - xi) * (y - yi)) / (yj - yi + 0.00001) + xi;
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+    return areas.some((area) => pointInPolygon(userLoc, area.coordinates));
+  }
+
   return (
     <Container maxWidth="sm" sx={{ py: 2 }}>
       <AppBar position="static" color="primary" sx={{ borderRadius: 2, mb: 2 }}>
@@ -116,6 +145,30 @@ const GeofenceClientMap: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
+      {/* Punch In button if user is inside geofence */}
+      {isUserInGeofence(userLocation, areas) && (
+        <button
+          style={{
+            position: "absolute",
+            bottom: 32,
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "12px 32px",
+            background: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: "1.1rem",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            zIndex: 2000,
+            cursor: "pointer",
+          }}
+          onClick={() => alert("Punched in!")}
+        >
+          Punch In
+        </button>
+      )}
       <Box
         sx={{
           textAlign: "center",
