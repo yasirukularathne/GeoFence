@@ -141,7 +141,7 @@ const GeofenceMapLeaflet: React.FC = () => {
     description: string;
     coordinates: { lat: number; lng: number }[];
   }) {
-    const res = await fetch("http://localhost:5000/api/geofence", {
+    const res = await fetch("/api/geofence", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(area),
@@ -157,7 +157,7 @@ const GeofenceMapLeaflet: React.FC = () => {
     lat: number;
     lng: number;
   }) {
-    const res = await fetch("http://localhost:5000/api/place", {
+    const res = await fetch("/api/place", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(place),
@@ -175,7 +175,7 @@ const GeofenceMapLeaflet: React.FC = () => {
     name: string,
     description: string
   ) {
-    const res = await fetch(`http://localhost:5000/api/place/${id}`, {
+    const res = await fetch(`/api/place/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description }),
@@ -190,7 +190,7 @@ const GeofenceMapLeaflet: React.FC = () => {
   }
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/place")
+    fetch("/api/place")
       .then((res) => {
         console.log("/api/place status:", res.status);
         return res.json();
@@ -237,7 +237,7 @@ const GeofenceMapLeaflet: React.FC = () => {
     if (editAreaIdx === null || !editAreaForm) return;
     const areaToUpdate = areas[editAreaIdx];
     // Update backend
-    await fetch(`http://localhost:5000/api/geofence/${areaToUpdate._id}`, {
+    await fetch(`/api/geofence/${areaToUpdate._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

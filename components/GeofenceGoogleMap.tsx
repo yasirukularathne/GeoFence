@@ -30,7 +30,7 @@ export default function GeofenceGoogleMap() {
   } | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/geofence")
+    fetch("/api/geofence")
       .then((res) => res.json())
       .then((data) => setAreas(data));
     if (navigator.geolocation) {
