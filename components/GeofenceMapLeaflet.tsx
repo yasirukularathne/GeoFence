@@ -259,6 +259,18 @@ const GeofenceMapLeaflet: React.FC = () => {
     setEditAreaForm(null);
   };
 
+  // Add this handler function near your other handlers:
+  function handleDeleteArea(idx: number) {
+    const area = areas[idx];
+    // Call your API to delete the area by _id
+    if (area._id) {
+      fetch(`/api/geofence/${area._id}`, { method: "DELETE" }).then(() => {
+        setAreas(areas.filter((_, i) => i !== idx));
+        setSelectedArea(null);
+      });
+    }
+  }
+
   return (
     <div
       style={{
@@ -360,51 +372,36 @@ const GeofenceMapLeaflet: React.FC = () => {
         ))}
         {/* Render saved areas as polygons with popups */}
         {areas.map((area, idx) => (
-          <Polygon key={area._id || idx} positions={area.coordinates}>
+          <Polygon
+            key={area._id || idx}
+            positions={area.coordinates}
+            eventHandlers={{
+              click: () => setSelectedArea(idx),
+            }}
+          >
             <Popup>
-              {editAreaIdx === idx && editAreaForm ? (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleEditAreaSave();
-                  }}
-                >
-                  <input
-                    type="text"
-                    name="topic"
-                    value={editAreaForm.topic}
-                    onChange={handleEditAreaFormChange}
-                    style={{ width: "100%", marginBottom: 8 }}
-                    required
-                  />
-                  <textarea
-                    name="description"
-                    value={editAreaForm.description}
-                    onChange={handleEditAreaFormChange}
-                    style={{ width: "100%", marginBottom: 8 }}
-                    required
-                    rows={3}
-                  />
-                  <button type="submit" style={{ marginRight: 8 }}>
-                    Save
+              {selectedArea === idx ? (
+                <>
+                  <button
+                    type="button"
+                    style={{ marginRight: 8, color: "red" }}
+                    onClick={() => handleDeleteArea(idx)}
+                  >
+                    Delete Section
                   </button>
-                  <button type="button" onClick={handleEditAreaCancel}>
-                    Cancel
+                  <button
+                    type="button"
+                    style={{ marginRight: 8 }}
+                    onClick={() => handleEditArea(idx)}
+                  >
+                    Edit Section
                   </button>
-                </form>
+                </>
               ) : (
                 <>
                   <strong>{area.topic}</strong>
                   <br />
                   <span>{area.description}</span>
-                  <br />
-                  <button
-                    type="button"
-                    onClick={() => handleEditArea(idx)}
-                    style={{ marginTop: 8 }}
-                  >
-                    Edit
-                  </button>
                 </>
               )}
             </Popup>
