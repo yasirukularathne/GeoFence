@@ -55,7 +55,6 @@ const GeofenceClientMap: React.FC = () => {
         (pos) => {
           setUserLocation([pos.coords.latitude, pos.coords.longitude]);
           setLocating(false);
-          // Zoom to user location
           if (mapRef.current) {
             mapRef.current.setView(
               [pos.coords.latitude, pos.coords.longitude],
@@ -66,7 +65,8 @@ const GeofenceClientMap: React.FC = () => {
         () => {
           setUserLocation(null);
           setLocating(false);
-        }
+        },
+        { enableHighAccuracy: true }
       );
     } else {
       setLocating(false);
