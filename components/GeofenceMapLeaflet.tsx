@@ -233,31 +233,81 @@ const GeofenceMapLeaflet: React.FC = () => {
     setEditAreaForm({ ...editAreaForm, [e.target.name]: e.target.value });
   };
 
-  const handleEditAreaSave = async () => {
-    if (editAreaIdx === null || !editAreaForm) return;
-    const areaToUpdate = areas[editAreaIdx];
-    // Update backend
-    await fetch(`/api/geofence/${areaToUpdate._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+  const handleEditAreaSave = (
+    updatedCoords?: { lat: number; lng: number }[]
+  ) => {
+    if (editAreaIdx !== null && editAreaForm) {
+      const area = areas[editAreaIdx];
+      const updatedArea = {
+        ...area,
         topic: editAreaForm.topic,
         description: editAreaForm.description,
-        coordinates: areaToUpdate.coordinates,
-      }),
-    });
-    // Update local state
-    setAreas((prev) =>
-      prev.map((a, i) => (i === editAreaIdx ? { ...a, ...editAreaForm } : a))
-    );
-    setEditAreaIdx(null);
-    setEditAreaForm(null);
+        coordinates: updatedCoords || area.coordinates,
+      };
+      fetch(`/api/geofence/${area._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedArea),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setAreas(areas.map((a, i) => (i === editAreaIdx ? data : a)));
+          setEditAreaIdx(null);
+          setEditAreaForm(null);
+        });
+    }
   };
 
   const handleEditAreaCancel = () => {
     setEditAreaIdx(null);
     setEditAreaForm(null);
   };
+
+  function coordsEqual(
+    a: { lat: number; lng: number }[],
+    b: { lat: number; lng: number }[]
+  ) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].lat !== b[i].lat || a[i].lng !== b[i].lng) return false;
+    }
+    return true;
+  }
+
+  function handleEdited(e: any) {
+    const layers = e.layers;
+    layers.eachLayer((layer: any) => {
+      if (layer instanceof L.Polygon) {
+        const latlngsRaw = layer.getLatLngs();
+        let latlngs: { lat: number; lng: number }[] = [];
+        if (Array.isArray(latlngsRaw[0])) {
+          latlngs = (latlngsRaw[0] as L.LatLng[]).map((latlng: L.LatLng) => ({
+            lat: latlng.lat,
+            lng: latlng.lng,
+          }));
+        } else {
+          latlngs = (latlngsRaw as L.LatLng[]).map((latlng: L.LatLng) => ({
+            lat: latlng.lat,
+            lng: latlng.lng,
+          }));
+        }
+        // Find the area by matching coordinates
+        const idx = areas.findIndex((a) => coordsEqual(a.coordinates, latlngs));
+        if (idx !== -1 && areas[idx]._id) {
+          const updatedArea = { ...areas[idx], coordinates: latlngs };
+          fetch(`/api/geofence/${areas[idx]._id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedArea),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              setAreas(areas.map((a, i) => (i === idx ? data : a)));
+            });
+        }
+      }
+    });
+  }
 
   // Add this handler function near your other handlers:
   function handleDeleteArea(idx: number) {
@@ -299,6 +349,7 @@ const GeofenceMapLeaflet: React.FC = () => {
           <EditControl
             position="topright"
             onCreated={handleCreated}
+            onEdited={handleEdited}
             draw={{
               polygon: true,
               rectangle: true,
