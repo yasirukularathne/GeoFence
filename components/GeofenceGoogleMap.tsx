@@ -1,15 +1,16 @@
 "use client";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   GoogleMap,
-  useJsApiLoader,
-  Polygon,
   Marker,
+  Polygon,
+  useJsApiLoader,
 } from "@react-google-maps/api";
-import { useState, useCallback, useEffect } from "react";
 
 const containerStyle = {
   width: "100%",
   height: "500px",
+  borderRadius: "12px",
 };
 
 const center = {
@@ -17,33 +18,38 @@ const center = {
   lng: 79.8612,
 };
 
-export default function GeofenceGoogleMap() {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  });
+interface GeofenceArea {
+  topic: string;
+  description: string;
+  coordinates: { lat: number; lng: number }[];
+  _id?: string;
+}
 
-  const [areas, setAreas] = useState<any[]>([]);
+const GeofenceGoogleMap: React.FC = () => {
+  const [areas, setAreas] = useState<GeofenceArea[]>([]);
   const [userLocation, setUserLocation] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
+
   useEffect(() => {
     fetch("/api/geofence")
       .then((res) => res.json())
       .then((data) => setAreas(data));
+
     if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(
+      navigator.geolocation.getCurrentPosition(
         (pos) => {
           setUserLocation({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           });
         },
-        () => {
-          setUserLocation(null);
-        },
+        () => setUserLocation(null),
         { enableHighAccuracy: true }
       );
     }
@@ -57,7 +63,7 @@ export default function GeofenceGoogleMap() {
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={userLocation || center}
-      zoom={13}
+      zoom={userLocation ? 17 : 13}
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
@@ -67,17 +73,18 @@ export default function GeofenceGoogleMap() {
           key={area._id || idx}
           paths={area.coordinates}
           options={{
-            fillColor: "#1976d2",
             strokeColor: "#1976d2",
-            strokeOpacity: 0.8,
+            fillColor: "#1976d2",
             fillOpacity: 0.2,
           }}
         />
       ))}
       {/* Render user location marker */}
-      {userLocation && <Marker position={userLocation} label="You" />}
+      {userLocation && <Marker position={userLocation} />}
     </GoogleMap>
   ) : (
-    <div>Loading...</div>
+    <div>Loading Google Map...</div>
   );
-}
+};
+
+export default GeofenceGoogleMap;
