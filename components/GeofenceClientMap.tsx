@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Polygon, Popup, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import Container from "@mui/material/Container";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const center = [6.9271, 79.8612]; // Default center (Colombo)
 
@@ -37,35 +45,78 @@ const GeofenceClientMap: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
-      <MapContainer
-        center={(userLocation || center) as [number, number]}
-        zoom={13}
-        style={{ height: "500px", borderRadius: "12px" }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {/* Show geofence areas */}
-        {areas.map((area, idx) => (
-          <Polygon
-            key={area._id || idx}
-            positions={area.coordinates.map((pt) => [pt.lat, pt.lng])}
-            pathOptions={{ color: "red" }}
+    <Container maxWidth="sm" sx={{ py: 2 }}>
+      <AppBar position="static" color="primary" sx={{ borderRadius: 2, mb: 2 }}>
+        <Toolbar>
+          <LocationOnIcon sx={{ mr: 1 }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            GeoFence Client Map
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Card sx={{ borderRadius: 3, boxShadow: 4, mb: 2 }}>
+        <CardContent>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+            View geofence areas and your real-time location. Move around to see
+            your position update!
+          </Typography>
+          <Box
+            sx={{
+              width: "100%",
+              height: 500,
+              borderRadius: 3,
+              overflow: "hidden",
+            }}
           >
-            <Popup>
-              <strong>{area.topic}</strong>
-              <br />
-              <span>{area.description}</span>
-            </Popup>
-          </Polygon>
-        ))}
-        {/* Show user's location */}
-        {userLocation && (
-          <Marker position={userLocation}>
-            <Popup>Your Location</Popup>
-          </Marker>
-        )}
-      </MapContainer>
-    </div>
+            <MapContainer
+              center={(userLocation || center) as [number, number]}
+              zoom={13}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              {/* Show geofence areas */}
+              {areas.map((area, idx) => (
+                <Polygon
+                  key={area._id || idx}
+                  positions={area.coordinates.map((pt) => [pt.lat, pt.lng])}
+                  pathOptions={{ color: "#1976d2" }}
+                >
+                  <Popup>
+                    <Typography variant="subtitle1" fontWeight={700}>
+                      {area.topic}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {area.description}
+                    </Typography>
+                  </Popup>
+                </Polygon>
+              ))}
+              {/* Show user's location */}
+              {userLocation && (
+                <Marker position={userLocation}>
+                  <Popup>
+                    <Typography variant="subtitle1" fontWeight={700}>
+                      Your Location
+                    </Typography>
+                  </Popup>
+                </Marker>
+              )}
+            </MapContainer>
+          </Box>
+        </CardContent>
+      </Card>
+      <Box
+        sx={{
+          textAlign: "center",
+          mt: 2,
+          color: "text.secondary",
+        }}
+      >
+        <Typography variant="caption">
+          Powered by GeoFence & OpenStreetMap
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 
