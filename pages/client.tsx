@@ -1,7 +1,8 @@
 import dynamic from "next/dynamic";
+import Head from "next/head";
 
-const GeofenceClientMap = dynamic(
-  () => import("../components/GeofenceClientMap"),
+const GeofenceGoogleMap = dynamic(
+  () => import("../components/GeofenceGoogleMap"),
   {
     ssr: false,
   }
@@ -9,9 +10,16 @@ const GeofenceClientMap = dynamic(
 
 export default function ClientPage() {
   return (
-    <div>
-      <h2 style={{ textAlign: "center", marginTop: 24 }}>Client Map</h2>
-      <GeofenceClientMap />
-    </div>
+    <>
+      <Head>
+        <title>Geofence Client</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Client view for geofence tracking" />
+      </Head>
+      <main style={{ minHeight: "100vh", background: "#f7f7f7" }}>
+        <h1 style={{ textAlign: "center", marginTop: 32 }}>Geofence Client</h1>
+        <GeofenceGoogleMap />
+      </main>
+    </>
   );
 }
