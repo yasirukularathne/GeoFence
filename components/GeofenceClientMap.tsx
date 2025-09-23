@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import FindLocationButton from "./FindLocationButton";
 
 const center = [6.9271, 79.8612]; // Default center (Colombo)
 
@@ -25,6 +26,7 @@ const GeofenceClientMap: React.FC = () => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null
   );
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     // Fetch geofence areas from backend
@@ -44,6 +46,24 @@ const GeofenceClientMap: React.FC = () => {
       );
     }
   }, []);
+
+  function handleFindLocation() {
+    setLocating(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+          setLocating(false);
+        },
+        () => {
+          setUserLocation(null);
+          setLocating(false);
+        }
+      );
+    } else {
+      setLocating(false);
+    }
+  }
 
   // Helper function to check if user is inside any geofence area
   function isUserInGeofence(
@@ -169,6 +189,7 @@ const GeofenceClientMap: React.FC = () => {
           Punch In
         </button>
       )}
+      <FindLocationButton onClick={handleFindLocation} loading={locating} />
       <Box
         sx={{
           textAlign: "center",
