@@ -264,9 +264,17 @@ const GeofenceMapLeaflet: React.FC = () => {
     const area = areas[idx];
     // Call your API to delete the area by _id
     if (area._id) {
-      fetch(`/api/geofence/${area._id}`, { method: "DELETE" }).then(() => {
-        setAreas(areas.filter((_, i) => i !== idx));
-        setSelectedArea(null);
+      fetch(`/api/geofence`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: area._id }),
+      }).then((res) => {
+        if (res.ok) {
+          setAreas(areas.filter((_, i) => i !== idx));
+          setSelectedArea(null);
+        } else {
+          // Optionally handle error
+        }
       });
     }
   }
