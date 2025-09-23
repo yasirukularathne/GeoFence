@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
-const GeofenceGoogleMap = dynamic(
-  () => import("../components/GeofenceGoogleMap"),
+const GeofenceMapLeaflet = dynamic(
+  () => import("../components/GeofenceMapLeaflet"),
   { ssr: false }
 );
 import Head from "next/head";
@@ -21,7 +21,7 @@ export default function Home() {
       </Head>
       <main style={{ minHeight: "100vh", background: "#f7f7f7" }}>
         <h1 style={{ textAlign: "center", marginTop: 32 }}>Geofence Admin</h1>
-        <GeofenceGoogleMap />
+        <GeofenceMapLeaflet />
       </main>
     </>
   );
