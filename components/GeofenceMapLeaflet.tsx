@@ -9,6 +9,7 @@ import {
 } from "react-leaflet";
 import GeofenceSearchBar from "./GeofenceSearchBar";
 import GeofenceAreaModal from "./GeofenceAreaModal";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 import { EditControl } from "react-leaflet-draw";
 import L from "leaflet";
@@ -525,8 +526,19 @@ const GeofenceMapLeaflet: React.FC = () => {
         {/* Render client locations as markers with popups */}
         {clientLocations.map((client) => {
           const area = getClientArea(client, areas);
+          // Custom icon for client position using react-icons
+          const clientIcon = L.divIcon({
+            className: "client-pin-icon",
+            html: `<div style='color:#1976d2;font-size:2rem;display:flex;align-items:center;justify-content:center;'>${require("react-dom/server").renderToStaticMarkup(
+              <FaMapMarkerAlt />
+            )}</div>`,
+          });
           return (
-            <Marker key={client.clientId} position={[client.lat, client.lng]}>
+            <Marker
+              key={client.clientId}
+              position={[client.lat, client.lng]}
+              icon={clientIcon}
+            >
               <Popup>
                 Client: {client.clientId}
                 {area && (
