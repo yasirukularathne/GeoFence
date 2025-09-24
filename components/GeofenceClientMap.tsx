@@ -223,7 +223,21 @@ const GeofenceClientMap: React.FC = () => {
             zIndex: 2000,
             cursor: "pointer",
           }}
-          onClick={() => alert("Punched in!")}
+          onClick={async () => {
+            // Save punch status in database
+            const [lat, lng] = userLocation!;
+            await fetch("/api/client-location", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                clientId: getClientId(),
+                lat,
+                lng,
+                punchStatus: "punched-in",
+              }),
+            });
+            alert("Punched in!");
+          }}
         >
           Punch In
         </button>

@@ -11,6 +11,7 @@ const ClientLocationSchema = new mongoose.Schema({
   clientId: String,
   lat: Number,
   lng: Number,
+  punchStatus: { type: String, default: "" },
   timestamp: { type: Date, default: Date.now },
 });
 
@@ -23,13 +24,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { clientId, lat, lng } = req.body;
+    const { clientId, lat, lng, punchStatus } = req.body;
     if (!clientId || lat == null || lng == null) {
       return res.status(400).json({ error: "Missing clientId or coordinates" });
     }
     const location = await ClientLocation.findOneAndUpdate(
       { clientId },
-      { lat, lng, timestamp: new Date() },
+      { lat, lng, punchStatus: punchStatus || "", timestamp: new Date() },
       { upsert: true, new: true }
     );
     return res.status(200).json(location);
