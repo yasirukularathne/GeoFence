@@ -21,6 +21,20 @@ interface GeofenceArea {
   _id?: string;
 }
 
+const variantClasses = {
+  default: "bg-gray-100 text-gray-800 hover:bg-gray-200",
+  filled: "bg-emerald-600 text-white hover:bg-emerald-700",
+};
+
+function CustomButton({ children, variant = "default", ...props }) {
+  const classes = `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]}`;
+  return (
+    <button className={classes} {...props}>
+      {children}
+    </button>
+  );
+}
+
 const GeofenceClientMap: React.FC = () => {
   const [areas, setAreas] = useState<GeofenceArea[]>([]);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
@@ -47,6 +61,26 @@ const GeofenceClientMap: React.FC = () => {
         }
       );
     }
+  }, []);
+
+  useEffect(() => {
+    let watchId: number | null = null;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+        },
+        () => {
+          setUserLocation(null);
+        },
+        { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
+      );
+    }
+    return () => {
+      if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -218,22 +252,14 @@ const GeofenceClientMap: React.FC = () => {
       </Card>
       {/* Punch In button if user is inside geofence */}
       {isUserInGeofence(userLocation, areas) && (
-        <button
+        <CustomButton
+          variant="filled"
           style={{
             position: "fixed",
             bottom: 24,
             left: "50%",
             transform: "translateX(-50%)",
-            padding: "12px 32px",
-            background: "#1976d2",
-            color: "#fff",
-            border: "none",
-            borderRadius: 8,
-            fontWeight: 700,
-            fontSize: "1.1rem",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             zIndex: 2000,
-            cursor: "pointer",
             width: "90vw",
             maxWidth: 400,
           }}
@@ -254,7 +280,7 @@ const GeofenceClientMap: React.FC = () => {
           }}
         >
           Punch In
-        </button>
+        </CustomButton>
       )}
       <FindLocationButton onClick={handleFindLocation} loading={locating} />
       {showAccuracyMsg && (
