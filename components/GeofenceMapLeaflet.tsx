@@ -18,6 +18,14 @@ import { useState } from "react";
 
 const center = [6.9271, 79.8612]; // Example: Colombo
 
+// Add GeofenceArea type
+interface GeofenceArea {
+  _id?: string;
+  topic: string;
+  description: string;
+  coordinates: { lat: number; lng: number }[];
+}
+
 const GeofenceMapLeaflet: React.FC = () => {
   const drawnItemsRef = useRef<any>(null);
   const [places, setPlaces] = useState<
@@ -57,7 +65,7 @@ const GeofenceMapLeaflet: React.FC = () => {
     description: string;
   } | null>(null);
   const [clientLocations, setClientLocations] = useState<
-    Array<{ clientId: string; lat: number; lng: number }>
+    Array<{ clientId: string; lat: number; lng: number; punchStatus?: string }>
   >([]);
 
   const formatPolygonCoords = (coords: { lat: number; lng: number }[]) =>
@@ -344,6 +352,39 @@ const GeofenceMapLeaflet: React.FC = () => {
     }
   }
 
+  // Helper: point-in-polygon
+  function pointInPolygon(
+    point: [number, number],
+    vs: { lat: number; lng: number }[]
+  ) {
+    let x = point[0],
+      y = point[1];
+    let inside = false;
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      let xi = vs[i].lat,
+        yi = vs[i].lng;
+      let xj = vs[j].lat,
+        yj = vs[j].lng;
+      let intersect =
+        yi > y !== yj > y &&
+        x < ((xj - xi) * (y - yi)) / (yj - yi + 0.00001) + xi;
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  function getClientArea(
+    client: { lat: number; lng: number },
+    areas: GeofenceArea[]
+  ) {
+    for (const area of areas) {
+      if (pointInPolygon([client.lat, client.lng], area.coordinates)) {
+        return area;
+      }
+    }
+    return null;
+  }
+
   return (
     <div
       style={{
@@ -482,11 +523,26 @@ const GeofenceMapLeaflet: React.FC = () => {
           </Polygon>
         ))}
         {/* Render client locations as markers with popups */}
-        {clientLocations.map((client) => (
-          <Marker key={client.clientId} position={[client.lat, client.lng]}>
-            <Popup>Client: {client.clientId}</Popup>
-          </Marker>
-        ))}
+        {clientLocations.map((client) => {
+          const area = getClientArea(client, areas);
+          return (
+            <Marker key={client.clientId} position={[client.lat, client.lng]}>
+              <Popup>
+                Client: {client.clientId}
+                {area && (
+                  <>
+                    <br />
+                    <strong>In Area:</strong> {area.topic}
+                    <br />
+                    {area.description}
+                  </>
+                )}
+                <br />
+                <strong>Status:</strong> {client.punchStatus || "Not punched"}
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
       {/* Modal popout for new marker form */}
       {newMarker && (
