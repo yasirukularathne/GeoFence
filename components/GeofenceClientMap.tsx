@@ -133,26 +133,38 @@ const GeofenceClientMap: React.FC = () => {
   }, [userLocation]);
 
   return (
-    <Container maxWidth="sm" sx={{ py: 2 }}>
-      <AppBar position="static" color="primary" sx={{ borderRadius: 2, mb: 2 }}>
-        <Toolbar>
+    <Container maxWidth="sm" sx={{ py: 2, px: { xs: 0, sm: 2 } }}>
+      <AppBar
+        position="static"
+        color="primary"
+        sx={{ borderRadius: { xs: 0, sm: 2 }, mb: 2 }}
+      >
+        <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>
           <LocationOnIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+          >
             GeoFence Client Map
           </Typography>
         </Toolbar>
       </AppBar>
-      <Card sx={{ borderRadius: 3, boxShadow: 4, mb: 2 }}>
-        <CardContent>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+      <Card sx={{ borderRadius: { xs: 0, sm: 3 }, boxShadow: 4, mb: 2 }}>
+        <CardContent sx={{ px: { xs: 1, sm: 2 } }}>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 2, fontSize: { xs: "0.95rem", sm: "1rem" } }}
+          >
             View geofence areas and your real-time location. Move around to see
             your position update!
           </Typography>
           <Box
             sx={{
               width: "100%",
-              height: 500,
-              borderRadius: 3,
+              height: { xs: 350, sm: 500 },
+              borderRadius: { xs: 0, sm: 3 },
               overflow: "hidden",
             }}
           >
@@ -208,8 +220,8 @@ const GeofenceClientMap: React.FC = () => {
       {isUserInGeofence(userLocation, areas) && (
         <button
           style={{
-            position: "absolute",
-            bottom: 32,
+            position: "fixed",
+            bottom: 24,
             left: "50%",
             transform: "translateX(-50%)",
             padding: "12px 32px",
@@ -222,6 +234,8 @@ const GeofenceClientMap: React.FC = () => {
             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             zIndex: 2000,
             cursor: "pointer",
+            width: "90vw",
+            maxWidth: 400,
           }}
           onClick={async () => {
             // Save punch status in database
@@ -252,31 +266,16 @@ const GeofenceClientMap: React.FC = () => {
             transform: "translateX(-50%)",
             background: "#fff",
             color: "#1976d2",
-            border: "2px solid #1976d2",
+            padding: "8px 16px",
             borderRadius: 8,
-            padding: "16px 32px",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-            zIndex: 3000,
-            fontWeight: 500,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            fontWeight: 600,
             fontSize: "1rem",
+            zIndex: 3000,
+            maxWidth: "90vw",
           }}
         >
-          For best location accuracy, please enable High Accuracy mode and turn
-          off Battery Saver on your device.
-          <button
-            style={{
-              marginLeft: 16,
-              background: "#1976d2",
-              color: "#fff",
-              border: "none",
-              borderRadius: 4,
-              padding: "4px 12px",
-              cursor: "pointer",
-            }}
-            onClick={() => setShowAccuracyMsg(false)}
-          >
-            Dismiss
-          </button>
+          Location accuracy may vary. Please ensure GPS is enabled.
         </div>
       )}
       <Box
