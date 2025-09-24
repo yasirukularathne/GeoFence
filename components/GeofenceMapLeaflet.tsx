@@ -401,7 +401,10 @@ const GeofenceMapLeaflet: React.FC = () => {
         style={{ height: "500px", borderRadius: "12px" }}
       >
         <GeofenceSearchBar />
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution=""
+        />
         <FeatureGroup ref={drawnItemsRef}>
           <EditControl
             position="topright"
