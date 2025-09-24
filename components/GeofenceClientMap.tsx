@@ -27,6 +27,7 @@ const GeofenceClientMap: React.FC = () => {
     null
   );
   const [locating, setLocating] = useState(false);
+  const [showAccuracyMsg, setShowAccuracyMsg] = useState(false);
   const mapRef = useRef<any>(null);
 
   useEffect(() => {
@@ -46,6 +47,13 @@ const GeofenceClientMap: React.FC = () => {
         }
       );
     }
+  }, []);
+
+  useEffect(() => {
+    setShowAccuracyMsg(true);
+    // Optionally auto-hide after a few seconds
+    const timer = setTimeout(() => setShowAccuracyMsg(false), 10000);
+    return () => clearTimeout(timer);
   }, []);
 
   function handleFindLocation() {
@@ -199,6 +207,42 @@ const GeofenceClientMap: React.FC = () => {
         </button>
       )}
       <FindLocationButton onClick={handleFindLocation} loading={locating} />
+      {showAccuracyMsg && (
+        <div
+          style={{
+            position: "fixed",
+            top: 24,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#fff",
+            color: "#1976d2",
+            border: "2px solid #1976d2",
+            borderRadius: 8,
+            padding: "16px 32px",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+            zIndex: 3000,
+            fontWeight: 500,
+            fontSize: "1rem",
+          }}
+        >
+          For best location accuracy, please enable High Accuracy mode and turn
+          off Battery Saver on your device.
+          <button
+            style={{
+              marginLeft: 16,
+              background: "#1976d2",
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              padding: "4px 12px",
+              cursor: "pointer",
+            }}
+            onClick={() => setShowAccuracyMsg(false)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       <Box
         sx={{
           textAlign: "center",
