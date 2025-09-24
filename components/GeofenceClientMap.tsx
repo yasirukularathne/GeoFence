@@ -110,6 +110,28 @@ const GeofenceClientMap: React.FC = () => {
     return areas.some((area) => pointInPolygon(userLoc, area.coordinates));
   }
 
+  // Helper to generate a unique client ID (for demo, use localStorage)
+  function getClientId() {
+    let id = localStorage.getItem("clientId");
+    if (!id) {
+      id = Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("clientId", id);
+    }
+    return id;
+  }
+
+  // Send location to backend whenever it changes
+  useEffect(() => {
+    if (userLocation) {
+      const [lat, lng] = userLocation;
+      fetch("/api/client-location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId: getClientId(), lat, lng }),
+      });
+    }
+  }, [userLocation]);
+
   return (
     <Container maxWidth="sm" sx={{ py: 2 }}>
       <AppBar position="static" color="primary" sx={{ borderRadius: 2, mb: 2 }}>

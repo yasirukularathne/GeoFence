@@ -56,6 +56,9 @@ const GeofenceMapLeaflet: React.FC = () => {
     name: string;
     description: string;
   } | null>(null);
+  const [clientLocations, setClientLocations] = useState<
+    Array<{ clientId: string; lat: number; lng: number }>
+  >([]);
 
   const formatPolygonCoords = (coords: { lat: number; lng: number }[]) =>
     coords.map((pt) => [pt.lat, pt.lng]);
@@ -209,6 +212,18 @@ const GeofenceMapLeaflet: React.FC = () => {
     fetch("/api/geofence")
       .then((res) => res.json())
       .then((data) => setAreas(data));
+  }, []);
+
+  // Fetch client locations every 10 seconds
+  useEffect(() => {
+    const fetchClients = () => {
+      fetch("/api/client-location")
+        .then((res) => res.json())
+        .then((data) => setClientLocations(data));
+    };
+    fetchClients();
+    const interval = setInterval(fetchClients, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   // Handler for editing an area
@@ -465,6 +480,12 @@ const GeofenceMapLeaflet: React.FC = () => {
               )}
             </Popup>
           </Polygon>
+        ))}
+        {/* Render client locations as markers with popups */}
+        {clientLocations.map((client) => (
+          <Marker key={client.clientId} position={[client.lat, client.lng]}>
+            <Popup>Client: {client.clientId}</Popup>
+          </Marker>
         ))}
       </MapContainer>
       {/* Modal popout for new marker form */}
