@@ -154,9 +154,18 @@ const GeofenceClientMap: React.FC = () => {
     return id;
   }
 
+  function isLaptopOrDesktop() {
+    const ua = navigator.userAgent;
+    // Simple check for common desktop OS/browser strings
+    return (
+      /Windows|Macintosh|Linux|X11/.test(ua) &&
+      !/Android|iPhone|iPad|Mobile/.test(ua)
+    );
+  }
+
   // Send location to backend whenever it changes
   useEffect(() => {
-    if (userLocation) {
+    if (userLocation && !isLaptopOrDesktop()) {
       const [lat, lng] = userLocation;
       fetch("/api/client-location", {
         method: "POST",
