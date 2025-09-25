@@ -231,7 +231,7 @@ const GeofenceMapLeaflet: React.FC = () => {
         .then((data) => setClientLocations(data));
     };
     fetchClients();
-    const interval = setInterval(fetchClients, 10000);
+    const interval = setInterval(fetchClients, 1000); // Poll every 1 second
     return () => clearInterval(interval);
   }, []);
 
