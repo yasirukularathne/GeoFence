@@ -266,13 +266,14 @@ const GeofenceClientMap: React.FC = () => {
           variant="filled"
           style={{
             position: "fixed",
-            bottom: 24,
+            bottom: 16,
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 2000,
-            width: "90vw",
-            maxWidth: 400,
-            fontSize: "1.2rem",
+            width: "96vw",
+            maxWidth: 420,
+            minWidth: 180,
+            fontSize: "1.15rem",
             fontWeight: 700,
             boxShadow: "0 4px 24px rgba(33, 150, 243, 0.15)",
             transition: "transform 0.15s cubic-bezier(.4,2,.6,1)",
@@ -282,9 +283,18 @@ const GeofenceClientMap: React.FC = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 12,
+            gap: 10,
+            padding: "14px 0",
+            border: "none",
+            outline: "none",
+            touchAction: "manipulation",
+            userSelect: "none",
           }}
-          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+          onTouchStart={(e) =>
+            (e.currentTarget.style.transform = "scale(0.97)")
+          }
+          onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
           onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
           onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           onClick={async () => {
@@ -305,8 +315,8 @@ const GeofenceClientMap: React.FC = () => {
         >
           <FaRegHandPointer
             style={{
-              fontSize: 24,
-              marginRight: 8,
+              fontSize: 22,
+              marginRight: 6,
               color: "#1976d2",
             }}
           />

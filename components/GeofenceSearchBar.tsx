@@ -40,11 +40,18 @@ const GeofenceSearchBar: React.FC = () => {
         position: "absolute",
         top: 16,
         left: 16,
+        right: 16,
         zIndex: 1000,
         background: "#fff",
         padding: 8,
         borderRadius: 8,
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        maxWidth: 400,
+        width: "calc(100vw - 32px)",
+        gap: 8,
       }}
     >
       <input
@@ -55,19 +62,22 @@ const GeofenceSearchBar: React.FC = () => {
           padding: 8,
           borderRadius: 4,
           border: "1px solid #ccc",
-          width: 220,
+          flex: 1,
+          minWidth: 0,
+          fontSize: 16,
         }}
       />
       <button
         type="submit"
         style={{
-          marginLeft: 8,
           padding: "8px 16px",
           borderRadius: 4,
           background: "#2196f3",
           color: "#fff",
           border: "none",
           cursor: "pointer",
+          fontWeight: 600,
+          fontSize: 16,
         }}
       >
         Search
