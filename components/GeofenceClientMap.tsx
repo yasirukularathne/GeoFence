@@ -11,6 +11,7 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FindLocationButton from "./FindLocationButton";
+import { FaRegHandPointer } from "react-icons/fa";
 
 const center = [6.9271, 79.8612]; // Default center (Colombo)
 
@@ -271,7 +272,21 @@ const GeofenceClientMap: React.FC = () => {
             zIndex: 2000,
             width: "90vw",
             maxWidth: 400,
+            fontSize: "1.2rem",
+            fontWeight: 700,
+            boxShadow: "0 4px 24px rgba(33, 150, 243, 0.15)",
+            transition: "transform 0.15s cubic-bezier(.4,2,.6,1)",
+            background: "linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)",
+            color: "#222",
+            letterSpacing: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
           }}
+          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+          onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           onClick={async () => {
             // Save punch status in database
             const [lat, lng] = userLocation!;
@@ -288,6 +303,13 @@ const GeofenceClientMap: React.FC = () => {
             alert("Punched in!");
           }}
         >
+          <FaRegHandPointer
+            style={{
+              fontSize: 24,
+              marginRight: 8,
+              color: "#1976d2",
+            }}
+          />
           Punch In
         </CustomButton>
       )}
